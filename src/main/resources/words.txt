@@ -1,0 +1,12 @@
+apple
+other
+hello
+world
+guess
+light
+sound
+crane
+slate
+plant
+mango
+grape
