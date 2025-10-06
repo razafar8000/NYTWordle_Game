@@ -24,9 +24,12 @@ public class WordleModel {
         this.secretWord = secretWord;
     }
 
-
-    public void makeGuess(String word){ //stores new guess object and inc guessCount
+    public void makeGuess(String word) {
         if (this.guessCount < 6) {
+            if (!RandomWordFetcher.isValidWord(word)) {
+                System.out.println("Invalid word. Please try again.");
+                return;
+            }
             Guess userGuess = new Guess(word.toLowerCase(), this.secretWord);
             this.guessesMade[guessCount] = userGuess;
             guessCount++;
@@ -41,7 +44,6 @@ public class WordleModel {
         }
     }
 
-
     //responsible for saving and loading
     public void saveGame(){ //saves the current state of game to JSON
         SaveLoad.saveState(this);
@@ -49,8 +51,6 @@ public class WordleModel {
     public void loadGame(){ //loads the last saved state from JSON
         SaveLoad.loadState(this);
     }
-
-
 
     //these are the getters and setters and win/loss checkers
     public Boolean isWon(){

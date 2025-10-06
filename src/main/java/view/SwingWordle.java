@@ -83,6 +83,11 @@ public class SwingWordle extends JFrame {
 
         if (controller.isWon()) showPopup(true);
         else if (controller.isLost()) showPopup(false);
+
+        for (JButton btn : usedButtons.values()) {
+            btn.repaint();
+        }
+
         refreshCount++;
     }
 
@@ -132,19 +137,60 @@ public class SwingWordle extends JFrame {
         if (controller.getGuessState()) {
             int row = controller.getGuessCount() - 1;
             Guess g = controller.getLastGuess();
-            for (int i = 0; i < 5; i++) {
-                char ch = g.getGuess().charAt(i);
-                LetterFeedback eval = g.getLetterEval(i);
-                boardCells[row][i].setText(String.valueOf(ch).toUpperCase());
-                switch (eval) {
-                    case CORRECT: boardCells[row][i].setBackground(new Color(0, 200, 0)); break;
-                    case PRESENT: boardCells[row][i].setBackground(new Color(255, 200, 0)); break;
-                    case ABSENT:  boardCells[row][i].setBackground(new Color(180, 180, 180)); break;
+            if (g != null) {
+                for (int i = 0; i < 5; i++) {
+                    char ch = g.getGuess().charAt(i);
+                    LetterFeedback eval = g.getLetterEval(i);
+
+                    // Updates grid cell text
+                    boardCells[row][i].setText(String.valueOf(ch).toUpperCase());
+                    boardCells[row][i].setOpaque(true);
+
+                    // Applies official Wordle-style colors
+                    switch (eval) {
+                        case CORRECT -> boardCells[row][i].setBackground(new Color(106, 170, 100));   // green
+                        case PRESENT -> boardCells[row][i].setBackground(new Color(201, 180, 88));   // yellow
+                        case ABSENT -> boardCells[row][i].setBackground(new Color(120, 124, 126));   // gray
+                    }
+
+                    // --- KEYBOARD COLOR LOGIC ---
+                    JButton key = keyboardButtons.get(String.valueOf(ch).toUpperCase());
+                    if (key != null) {
+                        Color newColor = switch (eval) {
+                            case CORRECT -> new Color(106, 170, 100);   // green
+                            case PRESENT -> new Color(201, 180, 88);    // yellow
+                            case ABSENT -> new Color(120, 124, 126);    // gray
+                        };
+
+                        // Does not downgrade colors (keeps green over yellow/gray)
+                        Color current = key.getBackground();
+                        if (!current.equals(new Color(106, 170, 100))) {
+                            if (eval == LetterFeedback.CORRECT ||
+                                    (eval == LetterFeedback.PRESENT && !current.equals(new Color(201, 180, 88))) ||
+                                    (eval == LetterFeedback.ABSENT && current.equals(new Color(211, 214, 218)))) {
+
+                                key.setBackground(newColor);
+                                // Automatically adjust text color for contrast
+                                if (eval == LetterFeedback.CORRECT || eval == LetterFeedback.PRESENT) {
+                                    key.setForeground(Color.WHITE);
+                                } else {
+                                    key.setForeground(Color.BLACK);
+                                }
+                                key.setOpaque(true);
+                                key.repaint();
+
+                            }
+                        }
+
+                        usedButtons.put(String.valueOf(ch).toUpperCase(), key);
+                    }
                 }
             }
             controller.resetGuessState();
         }
     }
+
+
 
     private void updateScreenBuffer() {
         int row = controller.getGuessCount();
@@ -167,11 +213,16 @@ public class SwingWordle extends JFrame {
         JPanel row = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
         for (String key : keys) {
             JButton btn = new JButton(key);
-            btn.setBackground(new Color(230, 230, 230));
-            btn.setFont(new Font("Arial", Font.PLAIN, 14));
+            btn.setBackground(new Color(211, 214, 218)); // official Wordle light-gray
+            btn.setFont(new Font("Arial", Font.BOLD, 14));
+            btn.setForeground(Color.BLACK);
+            btn.setFocusPainted(false);
+            btn.setOpaque(true);
+            btn.setBorderPainted(false);
             btn.setFocusable(false);
             btn.addActionListener(e -> onKeyPress(key));
             keyboardButtons.put(key, btn);
+
             if ("ENTER".equals(key) || "BACKSPACE".equals(key)) btn.setPreferredSize(new Dimension(80, 40));
             row.add(btn);
         }

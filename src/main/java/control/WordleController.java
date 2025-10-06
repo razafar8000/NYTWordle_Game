@@ -1,6 +1,7 @@
 package control;
 
 import model.*;
+import control.GuessValidator;
 
 // WordleController.java
 // Serves as the controller in the MVC architecture, processing user input,
@@ -20,9 +21,27 @@ public class WordleController {
 
     public void onGuess(String word) {
         //when a guess is made guess count and pass word gets incremented to model
-        if (word.length() == 5) {
-            model.makeGuess(word);
+        if (buffer.length() == 5) {
+            if (GuessValidator.isValid(buffer)) {
+                model.makeGuess(buffer);
+            } else {
+                // Trigger popup for invalid English word
+                javax.swing.JOptionPane.showMessageDialog(
+                        null,
+                        buffer.toUpperCase() + " is not a valid English word!",
+                        "Invalid Guess",
+                        javax.swing.JOptionPane.WARNING_MESSAGE
+                );
+            }
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(
+                    null,
+                    "Please enter a 5-letter word.",
+                    "Invalid Input",
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+            );
         }
+
     }
 
     public void onKeyPress(String key) {
