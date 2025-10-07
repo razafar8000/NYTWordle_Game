@@ -6,6 +6,11 @@
 - **Rayan Zafar**
 
 ---
+## Gameplay Demo Video
+https://youtu.be/C9VgAE7sedo?si=NPfu5e56vfI5lHbr
+
+---
+
 ## How to Run
 1. Clone the repository:
    ```bash
