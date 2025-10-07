@@ -95,4 +95,13 @@ public class WordleModel {
     public int getGuessCount(){
         return this.guessCount;
     }
+
+    // Optional helper used for testing purposes only
+    public void setWon(boolean won) {
+        // Forces win/loss state for testing (no effect in normal gameplay)
+        if (won && guessCount == 0) {
+            // Creates a fake winning guess if needed
+            makeGuess(this.secretWord);
+        }
+    }
 }

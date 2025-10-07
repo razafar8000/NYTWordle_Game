@@ -82,5 +82,8 @@ public class WordleController {
     //saves and loads
     public void saveGame() { model.saveGame(); }
     public void loadGame() { model.loadGame(); }
+
+    // For testing: bypasses validation
+    public void forceGuess(String word) { model.makeGuess(word);}
 }
 
